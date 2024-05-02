@@ -16,7 +16,7 @@ import blogRoutes from './routes/BlogRoutes.js';
 import categoryBlogRoutes from './routes/categoryBlogRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
-import cartRoutes from './routes/cartRoutes.js'; 
+import cartRoutes from './routes/cartRoutes.js';
 
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
@@ -30,9 +30,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(cors({
-  origin: 'https://fe-shoppet.vercel.app'  
-}));
+const allowedOrigins = [
+  'https://fe-shoppet.vercel.app',
+  'https://admin-shoppet.vercel.app',
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // cho phép các yêu cầu không có nguồn gốc (như ứng dụng dành cho thiết bị di động, yêu cầu cuộn tròn)        if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg =
+          'Chính sách CORS cho trang web này, không cho phép truy cập từ Nguồn gốc được chỉ định.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+  })
+);
 
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
@@ -69,6 +84,4 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () =>
-  console.log(`Server running on port ${port}`)
-);
+app.listen(port, () => console.log(`Server running on port ${port}`));
