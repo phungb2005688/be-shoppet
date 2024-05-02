@@ -30,24 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const allowedOrigins = [
-  'https://fe-shoppet.vercel.app',
-  'https://admin-shoppet.vercel.app',
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // cho phép các yêu cầu không có nguồn gốc (như ứng dụng dành cho thiết bị di động, yêu cầu cuộn tròn)        if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        var msg =
-          'Chính sách CORS cho trang web này, không cho phép truy cập từ Nguồn gốc được chỉ định.';
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-  })
-);
+app.use(cors());
 
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
